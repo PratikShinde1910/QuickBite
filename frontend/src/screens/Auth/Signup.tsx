@@ -21,7 +21,7 @@ export const Signup: React.FC<any> = ({ navigation }) => {
         setError('');
 
         try {
-            const response = await api.post('/auth/register', { name, email, password });
+            const response = await api.post('/api/auth/signup', { name, email, password });
 
             if (response.data && response.data.token) {
                 await login(response.data.token, {
