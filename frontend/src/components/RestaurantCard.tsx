@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, ViewStyle, Animated, Platform } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, ViewStyle, Animated, Platform, useWindowDimensions } from 'react-native';
 import { AppText } from './AppText';
 import { COLORS, RADIUS, SHADOWS, SPACING } from '../theme';
 import { Restaurant } from '../data/mockData';
@@ -21,6 +21,16 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     const restaurantId = restaurant._id || restaurant.id;
     const isFav = isFavorite(restaurantId);
     const scaleAnim = useRef(new Animated.Value(1)).current;
+    const { width: windowWidth } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+
+    // Calculate precise width based on breakpoints to enforce exact visual grid
+    const getCardWidth = () => {
+        if (!isWeb) return '100%';
+        if (windowWidth > 1200) return '31.5%'; // Account for gaps in 3 columns
+        if (windowWidth > 768) return '48%';    // Account for gaps in 2 columns
+        return '100%';
+    };
 
     const handleFavoritePress = () => {
         Animated.sequence([
@@ -43,7 +53,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({
     return (
         <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.container, style]}
+            style={[styles.container, style, { width: getCardWidth() }]}
             onPress={onPress}
         >
             <View>
@@ -103,9 +113,10 @@ const styles = StyleSheet.create({
         overflow: 'hidden', // to ensure image honors radius
         ...SHADOWS.medium,
         marginBottom: SPACING.l,
-        width: Platform.OS === 'web' ? '100%' : '100%',
-        maxWidth: Platform.OS === 'web' ? 900 : '100%',
-        alignSelf: Platform.OS === 'web' ? 'center' : 'stretch',
+        ...(Platform.OS === 'web' && {
+            cursor: 'pointer',
+            transitionDuration: '200ms',
+        }),
     },
     image: {
         height: Platform.OS === 'web' ? 220 : 180,

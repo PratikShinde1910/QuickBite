@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, Platform } from 'react-native';
 import { CategoryItem } from './CategoryItem';
 import { SPACING } from '../theme';
 
@@ -40,6 +40,7 @@ export const CategoriesSection = React.memo(({ data, selectedCategory, onSelectC
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
+                contentContainerStyle={Platform.OS === 'web' ? styles.webListContent : undefined}
                 bounces={true}
                 initialNumToRender={5}
                 maxToRenderPerBatch={5}
@@ -52,5 +53,8 @@ export const CategoriesSection = React.memo(({ data, selectedCategory, onSelectC
 const styles = StyleSheet.create({
     container: {
         marginBottom: SPACING.m,
+    },
+    webListContent: {
+        gap: SPACING.m,
     },
 });

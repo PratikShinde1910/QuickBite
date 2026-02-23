@@ -58,82 +58,123 @@ export const MenuItemDetails: React.FC<any> = ({ route, navigation }) => {
                 </View>
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                {/* Hero Image Section */}
-                <View style={styles.heroContainer}>
-                    <Image source={{ uri: item.image }} style={styles.heroImage} resizeMode="cover" />
-                    <View style={styles.priceBadge}>
-                        <AppText variant="h3" color={COLORS.surface}>${item.price?.toFixed(2)}</AppText>
-                    </View>
-                </View>
+            <ScrollView contentContainerStyle={[styles.scrollContent, Platform.OS === 'web' && styles.webScrollContent]} showsVerticalScrollIndicator={false}>
+                <View style={Platform.OS === 'web' ? styles.webRootContainer : {}}>
+                    <View style={Platform.OS === 'web' ? styles.webFlexRow : {}}>
 
-                {/* Food Details Section */}
-                <View style={styles.detailsSection}>
-                    <AppText variant="h1" style={styles.title}>{item.name}</AppText>
-                    <View style={styles.infoRow}>
-                        <AppText variant="body" style={styles.calories}>🔥 271 Cal.</AppText>
-                        <AppText variant="small" color="#F97316" style={styles.deliveryFee}>Free delivery</AppText>
-                    </View>
-
-                    {item.description && (
-                        <AppText variant="body" color={COLORS.textLight} style={styles.description}>
-                            {item.description}
-                        </AppText>
-                    )}
-
-                    <AppText variant="h3" style={styles.sectionHeading}>Ingredients</AppText>
-                    <View style={styles.ingredientsList}>
-                        <AppText variant="body" color={COLORS.textLight}>• Fresh ingredients</AppText>
-                        <AppText variant="body" color={COLORS.textLight}>• Secret spices</AppText>
-                        <AppText variant="body" color={COLORS.textLight}>• Organic produce</AppText>
-                    </View>
-                </View>
-
-                {/* Variation Selection */}
-                <View style={styles.variationCard}>
-                    <AppText variant="h3" style={styles.variationTitle}>Variation</AppText>
-                    {variations.map(vari => {
-                        const isSelected = selectedVariation === vari.id;
-                        const vPrice = (item.price || 0) * vari.priceMultiplier;
-                        return (
-                            <TouchableOpacity
-                                key={vari.id}
-                                style={[styles.variationRow, isSelected && styles.variationRowSelected]}
-                                onPress={() => setSelectedVariation(vari.id)}
-                            >
-                                <View style={styles.variationLeft}>
-                                    <View style={[styles.radioOuter, isSelected && styles.radioOuterSelected]}>
-                                        {isSelected && <View style={styles.radioInner} />}
-                                    </View>
-                                    <AppText variant="body">{vari.name}</AppText>
+                        {/* LEFT COLUMN (Web) / Top Flow (Mobile) */}
+                        <View style={Platform.OS === 'web' ? styles.webLeftCol : {}}>
+                            {/* Hero Image Section */}
+                            <View style={[styles.heroContainer, Platform.OS === 'web' && styles.webHeroContainer]}>
+                                <Image source={{ uri: item.image }} style={styles.heroImage} resizeMode="cover" />
+                                <View style={[styles.priceBadge, Platform.OS === 'web' && styles.webPriceBadge]}>
+                                    <AppText variant="h3" color={COLORS.surface}>${item.price?.toFixed(2)}</AppText>
                                 </View>
-                                <AppText variant="body" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
-                                    ${vPrice.toFixed(2)}
-                                </AppText>
-                            </TouchableOpacity>
-                        );
-                    })}
+                            </View>
+                        </View>
+
+                        {/* RIGHT COLUMN (Web) / Bottom Flow (Mobile) */}
+                        <View style={Platform.OS === 'web' ? styles.webRightCol : {}}>
+
+                            {/* Food Details Section */}
+                            <View style={[styles.detailsSection, Platform.OS === 'web' && styles.webDetailsSection]}>
+                                <AppText variant="h1" style={[styles.title, Platform.OS === 'web' && styles.webTitle]}>{item.name}</AppText>
+                                <View style={styles.infoRow}>
+                                    <AppText variant="body" style={styles.calories}>🔥 271 Cal.</AppText>
+                                    <AppText variant="small" color="#F97316" style={styles.deliveryFee}>Free delivery</AppText>
+                                </View>
+
+                                {item.description && (
+                                    <AppText variant="body" color={COLORS.textLight} style={styles.description}>
+                                        {item.description}
+                                    </AppText>
+                                )}
+
+                                <AppText variant="h3" style={styles.sectionHeading}>Ingredients</AppText>
+                                <View style={styles.ingredientsList}>
+                                    <AppText variant="body" color={COLORS.textLight}>• Fresh ingredients</AppText>
+                                    <AppText variant="body" color={COLORS.textLight}>• Secret spices</AppText>
+                                    <AppText variant="body" color={COLORS.textLight}>• Organic produce</AppText>
+                                </View>
+                            </View>
+
+                            {/* Variation Selection */}
+                            <View style={[styles.variationCard, Platform.OS === 'web' && styles.webVariationCard]}>
+                                <AppText variant="h3" style={styles.variationTitle}>Variation</AppText>
+                                {variations.map(vari => {
+                                    const isSelected = selectedVariation === vari.id;
+                                    const vPrice = (item.price || 0) * vari.priceMultiplier;
+                                    return (
+                                        <TouchableOpacity
+                                            key={vari.id}
+                                            style={[
+                                                styles.variationRow,
+                                                Platform.OS === 'web' && styles.webVariationRow,
+                                                isSelected && styles.variationRowSelected,
+                                                isSelected && Platform.OS === 'web' && styles.webVariationRowSelected
+                                            ]}
+                                            onPress={() => setSelectedVariation(vari.id)}
+                                        >
+                                            <View style={styles.variationLeft}>
+                                                <View style={[styles.radioOuter, isSelected && styles.radioOuterSelected]}>
+                                                    {isSelected && <View style={styles.radioInner} />}
+                                                </View>
+                                                <AppText variant="body">{vari.name}</AppText>
+                                            </View>
+                                            <AppText variant="body" style={{ fontWeight: isSelected ? 'bold' : 'normal' }}>
+                                                ${vPrice.toFixed(2)}
+                                            </AppText>
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </View>
+
+                            {/* Inline Add to Cart (Web Only) */}
+                            {Platform.OS === 'web' && (
+                                <View style={styles.webInlineCartBar}>
+                                    <View style={styles.stepperControl}>
+                                        <TouchableOpacity onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.stepperBtn}>
+                                            <Ionicons name="remove" size={24} color={COLORS.text} />
+                                        </TouchableOpacity>
+                                        <AppText variant="h2" style={styles.stepperValue}>{quantity}</AppText>
+                                        <TouchableOpacity onPress={() => setQuantity(quantity + 1)} style={styles.stepperBtn}>
+                                            <Ionicons name="add" size={24} color={COLORS.text} />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <TouchableOpacity style={[styles.addToCartBtn, styles.webAddToCartBtn]} activeOpacity={0.8} onPress={handleAddToCart}>
+                                        <AppText variant="h3" color={COLORS.surface}>Add to Cart</AppText>
+                                        <AppText variant="h3" color={COLORS.surface}>${totalPrice.toFixed(2)}</AppText>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </View>
+
+                        {Platform.OS !== 'web' && <View style={{ height: 120 }} />}
+
+                    </View>
                 </View>
-                <View style={{ height: 120 }} />
             </ScrollView>
 
-            {/* Add to Cart Fixed Bottom Bar */}
-            <View style={styles.bottomBar}>
-                <View style={styles.stepperControl}>
-                    <TouchableOpacity onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.stepperBtn}>
-                        <Ionicons name="remove" size={24} color={COLORS.text} />
-                    </TouchableOpacity>
-                    <AppText variant="h2" style={styles.stepperValue}>{quantity}</AppText>
-                    <TouchableOpacity onPress={() => setQuantity(quantity + 1)} style={styles.stepperBtn}>
-                        <Ionicons name="add" size={24} color={COLORS.text} />
+            {/* Add to Cart Fixed Bottom Bar (Mobile Only) */}
+            {Platform.OS !== 'web' && (
+                <View style={styles.bottomBar}>
+                    <View style={styles.stepperControl}>
+                        <TouchableOpacity onPress={() => setQuantity(Math.max(1, quantity - 1))} style={styles.stepperBtn}>
+                            <Ionicons name="remove" size={24} color={COLORS.text} />
+                        </TouchableOpacity>
+                        <AppText variant="h2" style={styles.stepperValue}>{quantity}</AppText>
+                        <TouchableOpacity onPress={() => setQuantity(quantity + 1)} style={styles.stepperBtn}>
+                            <Ionicons name="add" size={24} color={COLORS.text} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity style={styles.addToCartBtn} activeOpacity={0.8} onPress={handleAddToCart}>
+                        <AppText variant="h3" color={COLORS.surface}>Add to Cart</AppText>
+                        <AppText variant="h3" color={COLORS.surface}>${totalPrice.toFixed(2)}</AppText>
                     </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.addToCartBtn} activeOpacity={0.8} onPress={handleAddToCart}>
-                    <AppText variant="h3" color={COLORS.surface}>Add to Cart</AppText>
-                    <AppText variant="h3" color={COLORS.surface}>${totalPrice.toFixed(2)}</AppText>
-                </TouchableOpacity>
-            </View>
+            )}
         </View>
     );
 };
@@ -267,7 +308,7 @@ const styles = StyleSheet.create({
         right: 0,
         flexDirection: 'row',
         padding: SPACING.m,
-        paddingBottom: Platform.OS === 'web' ? SPACING.xxxl : SPACING.xl,
+        paddingBottom: Platform.OS === 'web' ? SPACING.xxl : SPACING.xl,
         backgroundColor: COLORS.surface,
         borderTopWidth: 1,
         borderTopColor: COLORS.border,
@@ -305,5 +346,79 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: SPACING.l,
         ...SHADOWS.medium,
+    },
+    // --- Web Specific Overrides ---
+    webScrollContent: {
+        paddingBottom: 40,
+    },
+    webRootContainer: {
+        width: '100%',
+        maxWidth: 1100,
+        alignSelf: 'center',
+        paddingHorizontal: 24,
+        paddingVertical: 24,
+    },
+    webFlexRow: {
+        flexDirection: 'row',
+        gap: 40,
+        alignItems: 'flex-start',
+    },
+    webLeftCol: {
+        width: '60%',
+    },
+    webRightCol: {
+        width: '40%',
+    },
+    webHeroContainer: {
+        height: 420,
+        borderRadius: 20,
+        marginBottom: 0,
+        ...SHADOWS.medium,
+    },
+    webPriceBadge: {
+        top: SPACING.l,
+        bottom: 'auto',
+        left: SPACING.l,
+    },
+    webDetailsSection: {
+        marginBottom: SPACING.m,
+        padding: 0,
+        backgroundColor: 'transparent',
+        shadowOpacity: 0,
+        elevation: 0,
+    },
+    webTitle: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginBottom: SPACING.s,
+    },
+    webVariationCard: {
+        padding: 0,
+        backgroundColor: 'transparent',
+        shadowOpacity: 0,
+        elevation: 0,
+    },
+    webVariationRow: {
+        backgroundColor: COLORS.surface,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        ...SHADOWS.soft,
+    },
+    webVariationRowSelected: {
+        backgroundColor: 'rgba(249, 115, 22, 0.08)',
+        borderColor: COLORS.primary,
+        borderWidth: 1,
+    },
+    webInlineCartBar: {
+        width: '100%',
+        marginTop: 24,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    webAddToCartBtn: {
+        height: 56,
+        borderRadius: 14,
     },
 });

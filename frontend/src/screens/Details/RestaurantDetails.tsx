@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, TextInput, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, TextInput, ActivityIndicator, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, MenuItemCard, AppButton, MiniCartBar } from '../../components';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../../theme';
@@ -86,122 +86,127 @@ export const RestaurantDetails: React.FC<any> = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-                <View style={styles.heroContainer}>
-                    <Image source={{ uri: restaurant.image }} style={styles.heroImage} />
-                    <View style={[styles.headerControls, { paddingTop: SPACING.m }]}>
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={() => navigation.goBack()}
-                        >
-                            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={() => navigation.navigate('Cart')}
-                        >
-                            <View>
-                                <Ionicons name="cart-outline" size={24} color={COLORS.text} />
-                                {cartCount > 0 && (
-                                    <View style={styles.badge}>
-                                        <AppText variant="small" color={COLORS.surface} style={{ fontSize: 10, fontWeight: 'bold' }}>
-                                            {cartCount}
-                                        </AppText>
-                                    </View>
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style={styles.content}>
-                    <AppText variant="h1" style={styles.name}>{restaurant.name}</AppText>
-                    <AppText variant="body" color={COLORS.textLight} style={styles.description}>
-                        {restaurant.description}
-                    </AppText>
-
-                    <View style={styles.metaRow}>
-                        <View style={styles.metaBadge}>
-                            <Ionicons name="star" size={18} color="#FFB800" />
-                            <AppText variant="body" style={styles.metaText}>{restaurant.rating}</AppText>
-                        </View>
-                        <View style={styles.metaBadge}>
-                            <Ionicons name="time-outline" size={18} color={COLORS.textLight} />
-                            <AppText variant="body" style={styles.metaText}>{restaurant.pickupTime}</AppText>
-                        </View>
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    {menuItems.length > 0 ? (
-                        <View style={styles.menuSection}>
-                            <AppText variant="h2" style={styles.sectionTitle}>All Items</AppText>
-                            {menuItems.map(item => (
-                                <MenuItemCard
-                                    key={item._id}
-                                    item={item}
-                                    onPress={() => navigation.navigate('MenuItemDetails', { item })}
-                                    onAddPressed={() => addToCart(item)}
-                                />
-                            ))}
-                        </View>
-                    ) : (
-                        <View style={styles.menuSection}>
-                            <AppText variant="body" color={COLORS.textLight} align="center">
-                                No menu items available.
-                            </AppText>
-                        </View>
-                    )}
-
-                    <View style={styles.divider} />
-
-                    {/* Reviews Section */}
-                    <View style={styles.reviewsSection}>
-                        <View style={styles.reviewsHeader}>
-                            <View>
-                                <AppText variant="h2">Reviews</AppText>
-                                <View style={styles.ratingSummaryRow}>
-                                    <Ionicons name="star" size={16} color="#FFB800" />
-                                    <AppText style={styles.ratingSummaryText}> {restaurant.rating} ({localReviews.length} reviews)</AppText>
-                                </View>
-                            </View>
-                            <AppButton
-                                title="Write Review"
-                                variant="outline"
-                                style={styles.writeReviewBtn}
-                                onPress={() => setIsReviewModalVisible(true)}
-                            />
-                        </View>
-
-                        {localReviews.length > 0 ? (
-                            localReviews.map(review => (
-                                <View key={review.id} style={styles.reviewCard}>
-                                    <View style={styles.reviewHeader}>
-                                        <AppText variant="title">{review.user}</AppText>
-                                        <View style={styles.reviewStars}>
-                                            {[...Array(5)].map((_, i) => (
-                                                <Ionicons
-                                                    key={i}
-                                                    name={i < review.rating ? "star" : "star-outline"}
-                                                    size={14}
-                                                    color="#FFB800"
-                                                />
-                                            ))}
+            <View style={Platform.OS === 'web' ? styles.webMaxWidthWrapper : { flex: 1 }}>
+                <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
+                    <View style={[styles.heroContainer, Platform.OS === 'web' && styles.webHeroContainer]}>
+                        <Image source={{ uri: restaurant.image }} style={[styles.heroImage, Platform.OS === 'web' && styles.webHeroImage]} />
+                        <View style={[styles.headerControls, { paddingTop: Platform.OS === 'web' ? SPACING.xl : SPACING.m }]}>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => navigation.goBack()}
+                            >
+                                <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={() => navigation.navigate('Cart')}
+                            >
+                                <View>
+                                    <Ionicons name="cart-outline" size={24} color={COLORS.text} />
+                                    {cartCount > 0 && (
+                                        <View style={styles.badge}>
+                                            <AppText variant="small" color={COLORS.surface} style={{ fontSize: 10, fontWeight: 'bold' }}>
+                                                {cartCount}
+                                            </AppText>
                                         </View>
-                                    </View>
-                                    <AppText variant="body" color={COLORS.textLight}>{review.comment}</AppText>
+                                    )}
                                 </View>
-                            ))
-                        ) : (
-                            <AppText variant="body" color={COLORS.textLight} align="center" style={{ marginVertical: SPACING.m }}>
-                                No reviews yet. Be the first to review!
-                            </AppText>
-                        )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
-                    <View style={{ height: 120 }} />
-                </View>
-            </ScrollView>
+                    <View style={[styles.content, Platform.OS === 'web' && styles.webContent]}>
+                        <AppText variant="h1" style={[styles.name, Platform.OS === 'web' && styles.webName]}>{restaurant.name}</AppText>
+                        <AppText variant="body" color={COLORS.textLight} style={styles.description}>
+                            {restaurant.description}
+                        </AppText>
+
+                        <View style={styles.metaRow}>
+                            <View style={styles.metaBadge}>
+                                <Ionicons name="star" size={18} color="#FFB800" />
+                                <AppText variant="body" style={styles.metaText}>{restaurant.rating}</AppText>
+                            </View>
+                            <View style={styles.metaBadge}>
+                                <Ionicons name="time-outline" size={18} color={COLORS.textLight} />
+                                <AppText variant="body" style={styles.metaText}>{restaurant.pickupTime}</AppText>
+                            </View>
+                        </View>
+
+                        <View style={styles.divider} />
+
+                        {menuItems.length > 0 ? (
+                            <View style={styles.menuSection}>
+                                <AppText variant="h2" style={styles.sectionTitle}>All Items</AppText>
+                                <View style={Platform.OS === 'web' ? styles.webMenuGrid : null}>
+                                    {menuItems.map(item => (
+                                        <MenuItemCard
+                                            key={item._id}
+                                            item={item}
+                                            style={Platform.OS === 'web' ? styles.webMenuItemCard : undefined}
+                                            onPress={() => navigation.navigate('MenuItemDetails', { item })}
+                                            onAddPressed={() => addToCart(item)}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                        ) : (
+                            <View style={styles.menuSection}>
+                                <AppText variant="body" color={COLORS.textLight} align="center">
+                                    No menu items available.
+                                </AppText>
+                            </View>
+                        )}
+
+                        <View style={styles.divider} />
+
+                        {/* Reviews Section */}
+                        <View style={styles.reviewsSection}>
+                            <View style={styles.reviewsHeader}>
+                                <View>
+                                    <AppText variant="h2">Reviews</AppText>
+                                    <View style={styles.ratingSummaryRow}>
+                                        <Ionicons name="star" size={16} color="#FFB800" />
+                                        <AppText style={styles.ratingSummaryText}> {restaurant.rating} ({localReviews.length} reviews)</AppText>
+                                    </View>
+                                </View>
+                                <AppButton
+                                    title="Write Review"
+                                    variant="outline"
+                                    style={styles.writeReviewBtn}
+                                    onPress={() => setIsReviewModalVisible(true)}
+                                />
+                            </View>
+
+                            {localReviews.length > 0 ? (
+                                localReviews.map(review => (
+                                    <View key={review.id} style={styles.reviewCard}>
+                                        <View style={styles.reviewHeader}>
+                                            <AppText variant="title">{review.user}</AppText>
+                                            <View style={styles.reviewStars}>
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Ionicons
+                                                        key={i}
+                                                        name={i < review.rating ? "star" : "star-outline"}
+                                                        size={14}
+                                                        color="#FFB800"
+                                                    />
+                                                ))}
+                                            </View>
+                                        </View>
+                                        <AppText variant="body" color={COLORS.textLight}>{review.comment}</AppText>
+                                    </View>
+                                ))
+                            ) : (
+                                <AppText variant="body" color={COLORS.textLight} align="center" style={{ marginVertical: SPACING.m }}>
+                                    No reviews yet. Be the first to review!
+                                </AppText>
+                            )}
+                        </View>
+
+                        <View style={{ height: 120 }} />
+                    </View>
+                </ScrollView>
+            </View>
 
             {/* Review Modal */}
             <Modal
@@ -381,6 +386,45 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 15,
+    },
+    webMaxWidthWrapper: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 1200,
+        alignSelf: 'center',
+        paddingHorizontal: 24,
+    },
+    webHeroContainer: {
+        height: 320,
+        marginBottom: 24,
+        borderRadius: 20,
+        overflow: 'hidden',
+        ...SHADOWS.medium,
+        marginTop: 24,
+    },
+    webHeroImage: {
+        resizeMode: 'cover',
+    },
+    webContent: {
+        marginTop: 0,
+        padding: 0,
+        backgroundColor: 'transparent',
+        marginBottom: 24,
+    },
+    webName: {
+        fontSize: 28,
+        lineHeight: 34,
+        marginBottom: SPACING.s,
+    },
+    webMenuGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 20,
+        justifyContent: 'space-between',
+    },
+    webMenuItemCard: {
+        width: '48%',
+        marginBottom: 0,
     },
     reviewsSection: {
         marginTop: SPACING.l,

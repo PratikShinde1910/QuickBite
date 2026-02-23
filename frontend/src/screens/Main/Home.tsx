@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Modal, ActivityIndicator, RefreshControl, Platform } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Modal, ActivityIndicator, RefreshControl, Platform, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, RestaurantCard, AppButton, MiniCartBar, SearchBar, CategoriesSection } from '../../components';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../../theme';
@@ -7,10 +7,15 @@ import { CATEGORIES } from '../../data/mockData';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useDebounce } from '../../hooks/useDebounce'; // Assuming useDebounce is available here or needs to be added
 
 export const Home: React.FC<any> = ({ navigation }) => {
     const { user } = useAuth();
-    const [debouncedQuery, setDebouncedQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const debouncedQuery = useDebounce(searchQuery, 500);
+    const { width: windowWidth } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+    const numColumns = isWeb && windowWidth > 768 ? 3 : isWeb && windowWidth > 480 ? 2 : 1;
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
     const [sortBy, setSortBy] = useState<'rating' | 'time' | null>(null);
@@ -86,67 +91,72 @@ export const Home: React.FC<any> = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
-            <View style={styles.fixedHeader}>
-                <View style={styles.greetingRow}>
-                    <View>
-                        <AppText variant="title">Good Evening,</AppText>
-                        <AppText variant="h2" color={COLORS.primary}>{user?.name || "Guest"}</AppText>
+        <SafeAreaView style={[styles.container, isWeb && styles.webContainerBg]} edges={['top']}>
+            <View style={styles.webMaxWidthWrapper}>
+                <View style={[styles.fixedHeader, isWeb && styles.webHeaderSpacing]}>
+                    <View style={styles.greetingRow}>
+                        <View>
+                            <AppText variant="title">Good Evening,</AppText>
+                            <AppText variant="h2" color={COLORS.primary}>{user?.name || "Guest"}</AppText>
+                        </View>
+                        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
+                            <Ionicons name="person-circle-outline" size={40} color={COLORS.textLight} />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
-                        <Ionicons name="person-circle-outline" size={40} color={COLORS.textLight} />
-                    </TouchableOpacity>
-                </View>
-                <SearchBar
-                    onSearch={setDebouncedQuery}
-                    onFilterPress={() => setIsFilterModalVisible(true)}
-                />
-            </View>
-
-            <FlatList
-                data={filteredRestaurants}
-                keyExtractor={item => item._id || item.id}
-                renderItem={({ item }) => (
-                    <RestaurantCard
-                        restaurant={item}
-                        onPress={() => navigation.navigate('RestaurantDetails', { restaurantId: item._id || item.id })}
+                    <SearchBar
+                        onSearch={setSearchQuery}
+                        onFilterPress={() => setIsFilterModalVisible(true)}
                     />
-                )}
-                ListHeaderComponent={renderHeader}
-                ListEmptyComponent={() => {
-                    if (loading) {
+                </View>
+
+                <FlatList
+                    data={filteredRestaurants}
+                    keyExtractor={item => item._id || item.id}
+                    renderItem={({ item }) => (
+                        <RestaurantCard
+                            restaurant={item}
+                            onPress={() => navigation.navigate('RestaurantDetails', { restaurantId: item._id || item.id })}
+                        />
+                    )}
+                    ListHeaderComponent={renderHeader}
+                    ListEmptyComponent={() => {
+                        if (loading) {
+                            return (
+                                <View style={styles.centerContainer}>
+                                    <ActivityIndicator size="large" color={COLORS.primary} />
+                                </View>
+                            );
+                        }
+                        if (error) {
+                            return (
+                                <View style={styles.errorCard}>
+                                    <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
+                                    <AppText variant="h3" style={styles.errorText}>{error}</AppText>
+                                    <AppButton title="Retry" onPress={() => fetchRestaurants(debouncedQuery)} style={styles.retryBtn} />
+                                </View>
+                            );
+                        }
                         return (
                             <View style={styles.centerContainer}>
-                                <ActivityIndicator size="large" color={COLORS.primary} />
+                                <AppText>No restaurants found.</AppText>
                             </View>
                         );
+                    }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLORS.primary]}
+                            tintColor={COLORS.primary}
+                        />
                     }
-                    if (error) {
-                        return (
-                            <View style={styles.errorCard}>
-                                <Ionicons name="alert-circle-outline" size={48} color="#EF4444" />
-                                <AppText variant="h3" style={styles.errorText}>{error}</AppText>
-                                <AppButton title="Retry" onPress={() => fetchRestaurants(debouncedQuery)} style={styles.retryBtn} />
-                            </View>
-                        );
-                    }
-                    return (
-                        <View style={styles.centerContainer}>
-                            <AppText>No restaurants found.</AppText>
-                        </View>
-                    );
-                }}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={[COLORS.primary]}
-                        tintColor={COLORS.primary}
-                    />
-                }
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-            />
+                    key={numColumns} // Force re-render on column change
+                    numColumns={numColumns}
+                    columnWrapperStyle={numColumns > 1 ? styles.columnWrapper : undefined}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                />
+            </View>
 
             <Modal
                 visible={isFilterModalVisible}
@@ -246,16 +256,34 @@ const styles = StyleSheet.create({
     },
     listContent: {
         padding: SPACING.m,
-        paddingBottom: Platform.OS === 'web' ? 120 : 150,
-        alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
+        paddingBottom: Platform.OS === 'web' ? 80 : 150,
+        alignItems: Platform.OS === 'web' ? 'stretch' : 'stretch',
+    },
+    columnWrapper: {
+        justifyContent: 'space-between',
+        marginBottom: 24,
+    },
+    webContainerBg: {
+        backgroundColor: '#f8f9fb',
+    },
+    webMaxWidthWrapper: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 1200,
+        alignSelf: 'center',
+        paddingHorizontal: Platform.OS === 'web' ? 24 : 0,
+        paddingTop: Platform.OS === 'web' ? 40 : 0,
+    },
+    webHeaderSpacing: {
+        paddingTop: SPACING.l,
     },
     header: {
         marginBottom: SPACING.m,
     },
     fixedHeader: {
-        paddingHorizontal: SPACING.m,
-        paddingTop: SPACING.s,
-        backgroundColor: COLORS.background,
+        paddingHorizontal: Platform.OS === 'web' ? 0 : SPACING.m,
+        paddingTop: Platform.OS === 'web' ? 0 : SPACING.s,
+        backgroundColor: Platform.OS === 'web' ? 'transparent' : COLORS.background,
         zIndex: 10,
     },
     greetingRow: {

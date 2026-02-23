@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator, Platform } from 'react-native';
+import { View, StyleSheet, FlatList, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, RestaurantCard, AppButton } from '../../components';
 import { COLORS, SPACING } from '../../theme';
@@ -10,6 +10,9 @@ import { useFocusEffect } from '@react-navigation/native';
 export const Favorites: React.FC<any> = ({ navigation }) => {
     const [favoriteRestaurants, setFavoriteRestaurants] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const { width: windowWidth } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
+    const numColumns = isWeb && windowWidth > 1200 ? 3 : isWeb && windowWidth > 768 ? 2 : 1;
 
     useFocusEffect(
         useCallback(() => {
@@ -41,18 +44,23 @@ export const Favorites: React.FC<any> = ({ navigation }) => {
                     <ActivityIndicator size="large" color={COLORS.primary} />
                 </View>
             ) : favoriteRestaurants.length > 0 ? (
-                <FlatList
-                    data={favoriteRestaurants}
-                    keyExtractor={item => item._id || item.id}
-                    renderItem={({ item }) => (
-                        <RestaurantCard
-                            restaurant={item}
-                            onPress={() => navigation.navigate('RestaurantDetails', { restaurantId: item._id || item.id })}
-                        />
-                    )}
-                    contentContainerStyle={styles.listContent}
-                    showsVerticalScrollIndicator={false}
-                />
+                <View style={styles.webMaxWidthWrapper}>
+                    <FlatList
+                        data={favoriteRestaurants}
+                        keyExtractor={item => item._id || item.id}
+                        key={numColumns} // Force re-render on layout change
+                        numColumns={numColumns}
+                        columnWrapperStyle={numColumns > 1 ? styles.columnWrapper : undefined}
+                        renderItem={({ item }) => (
+                            <RestaurantCard
+                                restaurant={item}
+                                onPress={() => navigation.navigate('RestaurantDetails', { restaurantId: item._id || item.id })}
+                            />
+                        )}
+                        contentContainerStyle={styles.listContent}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
             ) : (
                 <View style={styles.emptyContainer}>
                     <Ionicons name="heart-outline" size={64} color={COLORS.border} />
@@ -81,8 +89,19 @@ const styles = StyleSheet.create({
     },
     listContent: {
         padding: SPACING.m,
-        paddingBottom: Platform.OS === 'web' ? 120 : SPACING.xxxl,
-        alignItems: Platform.OS === 'web' ? 'center' : 'stretch',
+        paddingBottom: Platform.OS === 'web' ? 80 : SPACING.xxxl,
+        alignItems: Platform.OS === 'web' ? 'stretch' : 'stretch',
+    },
+    columnWrapper: {
+        justifyContent: 'space-between',
+        marginBottom: 24,
+    },
+    webMaxWidthWrapper: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 1200,
+        alignSelf: 'center',
+        paddingHorizontal: Platform.OS === 'web' ? 24 : 0,
     },
     emptyContainer: {
         flex: 1,

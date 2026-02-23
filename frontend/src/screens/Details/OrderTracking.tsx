@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, Animated, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Platform, TouchableOpacity } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { AppText, AppButton } from '../../components';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../../theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,16 +12,29 @@ const ORDER_STEPS = [
     { id: 'completed', label: 'Completed', time: '--' },
 ];
 
-export const OrderTracking: React.FC<any> = ({ route, navigation }) => {
-    // Determine the active step dynamically based on status string (Mock integration)
-    const { orderId, restaurantName, status } = route.params || {
-        orderId: 'ORD-001', restaurantName: 'Slice of Heaven', status: 'Ready for Pickup'
-    };
+export const OrderTracking: React.FC<any> = ({ navigation }) => {
+    const route = useRoute<any>();
+    const order = route?.params?.order;
+
+    if (!order) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Ionicons name="warning-outline" size={48} color={COLORS.textLight} style={{ marginBottom: SPACING.m }} />
+                <AppText variant="h2" style={{ marginBottom: SPACING.l }}>Order not found</AppText>
+                <AppButton title="Go Back" onPress={() => navigation.goBack()} />
+            </View>
+        );
+    }
+
+    const orderId = order?._id || 'Unknown';
+    const restaurantName = order?.items?.[0]?.menuItem?.restaurant || 'Restaurant';
+    const currentStatus = order?.status || 'Placed';
 
     const getActiveStepIndex = () => {
-        switch (status) {
+        switch (currentStatus) {
             case 'Completed': return 4; // all done
-            case 'Ready for Pickup': return 2;
+            case 'Ready for Pickup':
+            case 'Ready': return 2;
             case 'Preparing': return 1;
             default: return 0; // Placed
         }
@@ -48,7 +62,7 @@ export const OrderTracking: React.FC<any> = ({ route, navigation }) => {
                     <View style={styles.etaContainer}>
                         <Ionicons name="time-outline" size={20} color={COLORS.primary} />
                         <AppText variant="title" color={COLORS.primary} style={styles.etaText}>
-                            {status === 'Completed' ? 'Picked up' : 'Est. Pickup: 12:50 PM'}
+                            {currentStatus === 'Completed' ? 'Picked up' : 'Est. Pickup: 12:50 PM'}
                         </AppText>
                     </View>
                 </View>

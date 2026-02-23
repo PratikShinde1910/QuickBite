@@ -82,9 +82,7 @@ export const Orders: React.FC<any> = ({ navigation }) => {
                         variant="outline"
                         style={styles.reorderBtn}
                         onPress={() => navigation.navigate('OrderTracking', {
-                            orderId: item._id,
-                            restaurantName: firstRestaurantName,
-                            status: item.status,
+                            order: item
                         })}
                     />
                 </View>
