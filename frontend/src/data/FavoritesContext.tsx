@@ -13,7 +13,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [favorites, setFavorites] = useState<string[]>([]);
-    const { user } = useAuth();
+    const { user, token } = useAuth();
 
     useEffect(() => {
         if (user) {
@@ -25,7 +25,11 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
 
     const loadFavorites = async () => {
         try {
-            const response = await api.get('/users/favorites');
+            const response = await api.get('/favorites', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             // Backend returns an array. It could be populated restaurants or ObjectIds.
             // Since we use this state just for ID checking, we ensure we map to IDs.
             const favIds = response.data.map((fav: any) => typeof fav === 'string' ? fav : fav._id);
