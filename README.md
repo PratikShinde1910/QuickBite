@@ -3,7 +3,11 @@
 QuickBite is a full-stack food ordering mobile application built using React Native (Expo) and Node.js.  
 The app allows users to browse restaurants, add favorites, place pickup orders, and manage authentication securely using JWT.
 
+This is a professionally developed mobile application. For deployment and live demonstration purposes, it has also been adapted to a web version using Expo Web, which can be accessed through the provided link. Mobile application screenshots are shared below for showcase and reference. 🚀
+
 ---
+
+
 
 ## 🚀 Live Demo
 
