@@ -9,13 +9,13 @@ This is a professionally developed mobile application. For deployment and live d
 <table>
    <tr>
 <td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/homeScreen.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/restaurantPage.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/food.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/orderConfirm.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/cart.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/favorites.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/orders.png" width=250/></td>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/profile.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/restaurantPage.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/food.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/orderConfirm.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/cart.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/favorites.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/orders.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/profile.png" width=250/></td>
 </tr>
 </table>
 ## 🚀 Live Demo
