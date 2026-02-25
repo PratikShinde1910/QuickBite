@@ -8,7 +8,7 @@ This is a professionally developed mobile application. For deployment and live d
 ---
 <table>
    <tr>
-<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/homeScreen.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/assets/screenshots/homeScreen.png" width=250/></td>
 <td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/restaurantPage.png" width=250/></td>
 <td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/food.png" width=250/></td>
 <td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/orderConfirm.png" width=250/></td>
