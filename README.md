@@ -6,9 +6,18 @@ The app allows users to browse restaurants, add favorites, place pickup orders, 
 This is a professionally developed mobile application. For deployment and live demonstration purposes, it has also been adapted to a web version using Expo Web, which can be accessed through the provided link. Mobile application screenshots are shared below for showcase and reference. 🚀
 
 ---
-
-
-
+<table>
+   <tr>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/homeScreen.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/restaurantPage.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/food.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/orderConfirm.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/cart.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/favorites.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/orders.png" width=250/></td>
+<td><img src="https://raw.githubusercontent.com/PratikShinde1910/QuickBite/main/profile.png" width=250/></td>
+</tr>
+</table>
 ## 🚀 Live Demo
 
 🌐 Frontend (Web): https://quickbite-ngl.netlify.app
